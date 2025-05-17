@@ -14,8 +14,13 @@ function Mapping(freq){
   const notes = ["C", "C#/Db", "D", "D#/Eb", "E", "F", "F#/Gb", "G", "G#/Ab", "A", "A#/Bb", "B"];
   const steps = Math.round(Math.log2(freq / 261.63) * 12);
   const octave = 4 + Math.floor(steps / 12);
-  const note = steps % 12
-  return notes[note] + octave;
+  if(steps < 0){
+    const note = 12 - (Math.abs(steps) % 12);
+    return notes[note] + octave;
+  } else {
+    const note= steps % 12;
+    return notes[note] + octave;
+  }
 }
 
 function App() {
