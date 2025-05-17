@@ -1,6 +1,14 @@
 import { useEffect, useState, useRef } from 'react'
 import * as Pitchfinder from 'pitchfinder'
 
+function Mapping(freq){
+  const notes = ["C", "C#/Db", "D", "D#/Eb", "E", "F", "F#/Gb", "G", "G#/Ab", "A", "A#/Bb", "B"];
+  const steps = Math.round(Math.log2(freq / 261.63) * 12);
+  const octave = 4 + Math.floor(steps / 12);
+  const note = steps % 12
+  return notes[note] + octave;
+}
+
 function App() {
   const [pitch, setPitch] = useState(null);
   const [error, setError] = useState(null);
@@ -33,7 +41,8 @@ function App() {
           const detected = detectPitch(input);
           if (detected) {
             setPitch(detected);
-            console.log("pitch:", detected)
+            console.log(Mapping(detected));
+            //console.log("pitch:", detected)
           }
         };
   
