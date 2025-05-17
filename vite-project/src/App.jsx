@@ -2,56 +2,10 @@ import { useEffect, useState, useRef } from 'react'
 import * as Pitchfinder from 'pitchfinder'
 
 function Metronome() {
-  const [bpm, setBpm] = useState(120);
-  const [playing, setPlaying] = useState(false);
-  const [activeBeat, setActiveBeat] = useState(0);
-  const [intervalId, setIntervalId] = useState(null);
-
-  const handleStartStop = () => {
-    setPlaying(!playing);
-  };
-
-  const handleBpmChange = (e) => {
-    setBpm(parseInt(e.target.value));
-  };
-
-  // Calculate the interval in milliseconds based on BPM
-  const interval = 60000 / bpm;
-
-  useEffect(() => {
-    // Clear previous interval when BPM or playing state changes
-    if (intervalId) {
-      clearInterval(intervalId);
-    }
-
-    // Set a new interval when playing state is true
-    if (playing) {
-      const newIntervalId = setInterval(() => {
-        setActiveBeat((prevActiveBeat) => (prevActiveBeat + 1) % 4);
-      }, interval);
-      setIntervalId(newIntervalId);
-    }
-
-    return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
-    };
-  }, [playing, interval]);
 
   return (
     <div>
       <h1>Metronome</h1>
-      <div>
-        <label htmlFor="bpm">BPM:</label>
-        <input
-          type="number"
-          id="bpm"
-          value={bpm}
-          onChange={handleBpmChange}
-        />
-      </div>
-      <button onClick={handleStartStop}>{playing ? 'Stop' : 'Start'}</button>
     </div>
   );
 }
