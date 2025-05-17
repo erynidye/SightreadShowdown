@@ -1,44 +1,111 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import * as Pitchfinder from 'pitchfinder'
 
 function App() {
-  const [pitch, setPitch] = useState(null)
-  const [error, setError] = useState(null)
+  const [pitch, setPitch] = useState(null);
+  const [error, setError] = useState(null);
+  const [isReady, setIsReady] = useState(false);
+
+  const streamRef = useRef(null);
+  const audioContextRef = useRef(null);
+  const processorRef = useRef(null);
+  const sourceRef = useRef(null);
 
   useEffect(() => {
-    const detectPitch = Pitchfinder.AMDF()
-
+    const detectPitch = Pitchfinder.AMDF();
+  
     async function startMic() {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)()
-        const source = audioContext.createMediaStreamSource(stream)
-
-        const processor = audioContext.createScriptProcessor(2048, 1, 1)
-
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        streamRef.current = stream;
+  
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        audioContextRef.current = audioContext;
+  
+        const source = audioContext.createMediaStreamSource(stream);
+        sourceRef.current = source;
+  
+        const processor = audioContext.createScriptProcessor(2048, 1, 1);
+        processorRef.current = processor;
+  
         processor.onaudioprocess = (event) => {
-          const input = event.inputBuffer.getChannelData(0)
-          const detectedPitch = detectPitch(input)
-
-          if (detectedPitch) {
-            setPitch(detectedPitch)
+          const input = event.inputBuffer.getChannelData(0);
+          const detected = detectPitch(input);
+          if (detected) {
+            setPitch(detected);
+            console.log("pitch:", detected)
           }
-        }
-
-        source.connect(processor)
-        processor.connect(audioContext.destination)
+        };
+  
+        source.connect(processor);
+        processor.connect(audioContext.destination);
       } catch (err) {
-        console.error('Microphone access error:', err)
-        setError(err.message)
+        console.error("Microphone access error:", err);
+        setError(err.message);
       }
     }
-
-    startMic()
-
-    return () => {
-      // Cleanup logic could go here (e.g., stop tracks or disconnect nodes)
+  
+    async function stopMic() {
+      // stop tracks
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+        streamRef.current = null;
+      }
+  
+      // disconnect processor
+      if (processorRef.current) {
+        processorRef.current.disconnect();
+        processorRef.current.onaudioprocess = null;
+        processorRef.current = null;
+      }
+  
+      // disconnect source
+      if (sourceRef.current) {
+        sourceRef.current.disconnect();
+        sourceRef.current = null;
+      }
+  
+      // close audio context
+      if (audioContextRef.current) {
+        await audioContextRef.current.close();
+        audioContextRef.current = null;
+      }
+  
+      setPitch(null);
     }
-  }, [])
+  
+    // Only allow one startMic to run
+    let didCancel = false;
+  
+    if (isReady) {
+      stopMic().then(() => {
+        if (!didCancel) {
+          startMic();
+        }
+      });
+    } else {
+      stopMic();
+    }
+  
+    return () => {
+      didCancel = true;
+      stopMic();
+    };
+  }, [isReady]);
+  
+
+  useEffect(() => {
+    const readyButton = document.createElement("BUTTON");
+    readyButton.setAttribute("type", "button");
+    readyButton.innerHTML = "Click Me";
+    readyButton.onclick = () => setIsReady(prev => !prev);
+    document.body.appendChild(readyButton);
+  
+    return () => {
+      document.body.removeChild(readyButton); // clean up
+    };
+  }, []);
+  
 
   return (
     <>
@@ -48,6 +115,7 @@ function App() {
       ) : (
         <p>Detected pitch: {pitch ? `${pitch.toFixed(2)} Hz` : 'Listening…'}</p>
       )}
+      {/* <ReadyButton /> */}
     </>
   )
 }
