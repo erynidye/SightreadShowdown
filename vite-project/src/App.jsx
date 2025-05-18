@@ -1,14 +1,51 @@
 import { useEffect, useState, useRef } from 'react'
 import * as Pitchfinder from 'pitchfinder'
+import { GoogleGenAI } from "@google/genai";
 
-function Metronome() {
+const ai = new GoogleGenAI({ apiKey: "GEMINI_API_KEY" });
 
-  return (
-    <div>
-      <h1>Metronome</h1>
-    </div>
-  );
+export async function evaluatePerf(playedNotes, expectedNotes) {
+  const response = await ai.models.generateContent({
+    model: "gemini-2.5-pro-preview-05-06",
+    contents: [
+      {
+        role: "system",
+        parts: [
+          {
+            text: "You are an expert rhythm and pitch evaluator. Respond ONLY with an accuracy percent as a number between 0 and 100, no explanation. You will receive two array of maps: the first one will be from what the player played and the second one with the expected note to be played and its duration. Use the criteria of playing the right note at the right time and output the accuracy as a percentage. bpm is expected to be 100, let bpm played = n, if n != 100, score = (100% - (the difference between 100 and n)% * score. if it shows that the player has played a duration of 4s (scalable) but the expected is to be 1 1 1 1 (four quarter notes) - take it with a grain of salt because player probably articulated the individual notes but we don't have the tech to find that. "
+          }
+        ]
+      }, {
+        role: "user",
+        parts: [
+          {
+            text: JSON.stringify([playedNotes, expectedNotes])
+          }
+        ]
+      }, {
+        role: "model",
+        parts: [
+          {
+            text: "59.75"
+          }
+        ]
+      }
+
+    ]
+  });
+  console.log("response:", response);
+  return(response.text);
 }
+
+
+// function Metronome() {
+
+//   return (
+//     <div>
+//       <h1>Metronome</h1>
+//     </div>
+//   );
+// }
 
 function Mapping(freq){
   const notes = ["C", "C#/Db", "D", "D#/Eb", "E", "F", "F#/Gb", "G", "G#/Ab", "A", "A#/Bb", "B"];
@@ -137,7 +174,7 @@ function App() {
       ) : (
         <p>Detected pitch: {pitch ? `${pitch.toFixed(2)} Hz` : 'Listening…'}</p>
       )}
-      <Metronome />
+      {/* <Metronome /> */}
     </>
   )
 }
