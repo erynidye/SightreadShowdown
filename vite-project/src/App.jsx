@@ -170,9 +170,11 @@ function App() {
       {error ? (
         <p style={{ color: 'red' }}>Error: {error}</p>
       ) : (
-        <p>Detected pitch: {pitch ? `${pitch.toFixed(2)} Hz` : 'Listening…'}</p>
+          <p>Detected frequency: {pitch ? `${pitch.toFixed(2)} Hz` : 'Listening…'}<br></br>
+            Detected Note: {last}
+        </p>
       )}
-      <Metronome />
+      {/*<Metronome />*/}
     </>
   )
 }
