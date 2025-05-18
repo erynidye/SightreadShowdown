@@ -1,5 +1,13 @@
 import { useEffect, useState, useRef } from 'react'
 import * as Pitchfinder from 'pitchfinder'
+
+let last = "NA";
+let lastTime = 1000000000;
+
+let counter = 0;
+let playedNotes = [];
+
+function Metronome() {
 import { GoogleGenAI } from "@google/genai";
 
 const ai = new GoogleGenAI({ apiKey: "GEMINI_API_KEY" });
@@ -48,9 +56,12 @@ export async function evaluatePerf(playedNotes, expectedNotes) {
 // }
 
 function Mapping(freq){
+  //array of note names in an octave
   const notes = ["C", "C#/Db", "D", "D#/Eb", "E", "F", "F#/Gb", "G", "G#/Ab", "A", "A#/Bb", "B"];
+  // calculate the number of half steps from reference note (middle C) and the octave
   const steps = Math.round(Math.log2(freq / 261.63) * 12);
   const octave = 4 + Math.floor(steps / 12);
+  // return note name and octave
   if(steps < 0){
     const note = 12 - (Math.abs(steps) % 12);
     return notes[note] + octave;
@@ -75,6 +86,7 @@ function App() {
   
     async function startMic() {
       try {
+
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         streamRef.current = stream;
   
@@ -86,17 +98,33 @@ function App() {
   
         const processor = audioContext.createScriptProcessor(2048, 1, 1);
         processorRef.current = processor;
-  
+
         processor.onaudioprocess = (event) => {
           const input = event.inputBuffer.getChannelData(0);
-          const detected = detectPitch(input);
+          const detected = detectPitch(input); //Hz
+          let current = Mapping(detected); // note name
+
           if (detected) {
-            setPitch(detected);
-            console.log(Mapping(detected));
-            //console.log("pitch:", detected)
+            setPitch(detected); // still Hz
+            if (!((current === last) || (current === "NA"))) {
+              let d = new Date();
+              let duration = (d.getTime() - lastTime) / 1000;
+              if (0.06 < duration < 10 && last !== "NA") {
+                playedNotes.push({
+                  pitch: last,
+                  duration: duration
+                });
+              }
+              lastTime = d.getTime()
+              //console.log(duration);
+              last = current;
+              //console.log(playedNotes[counter].pitch);
+              //console.log(playedNotes[counter].duration);
+              counter += 1;
+            }
+            //console.log(current);
           }
         };
-  
         source.connect(processor);
         processor.connect(audioContext.destination);
       } catch (err) {
@@ -111,27 +139,36 @@ function App() {
         streamRef.current.getTracks().forEach(track => track.stop());
         streamRef.current = null;
       }
-  
+
       // disconnect processor
       if (processorRef.current) {
         processorRef.current.disconnect();
         processorRef.current.onaudioprocess = null;
         processorRef.current = null;
       }
-  
+
       // disconnect source
       if (sourceRef.current) {
         sourceRef.current.disconnect();
         sourceRef.current = null;
       }
-  
+
       // close audio context
       if (audioContextRef.current) {
         await audioContextRef.current.close();
         audioContextRef.current = null;
       }
-  
+
       setPitch(null);
+      let d = new Date();
+      let duration = (d.getTime() - lastTime) / 1000;
+      if (0.06 < duration < 10 && last !== "NA") {
+        playedNotes.push({
+          pitch: last,
+          duration: duration
+        });
+      }
+      console.log(playedNotes);
     }
   
     // Only allow one startMic to run
@@ -172,8 +209,11 @@ function App() {
       {error ? (
         <p style={{ color: 'red' }}>Error: {error}</p>
       ) : (
-        <p>Detected pitch: {pitch ? `${pitch.toFixed(2)} Hz` : 'Listening…'}</p>
+          <p>Detected frequency: {pitch ? `${pitch.toFixed(2)} Hz` : 'Listening…'}<br></br>
+            Detected Note: {last}
+        </p>
       )}
+      {/*<Metronome />*/}
       {/* <Metronome /> */}
     </>
   )
