@@ -7,7 +7,7 @@ let lastTime = 1000000000;
 let counter = 0;
 let playedNotes = [];
 
-function Metronome() {
+// function Metronome() 
 import { GoogleGenAI } from "@google/genai";
 
 const ai = new GoogleGenAI({ apiKey: "GEMINI_API_KEY" });
@@ -168,7 +168,7 @@ function App() {
           duration: duration
         });
       }
-      console.log(playedNotes);
+      console.log("after stopMic:", playedNotes);
     }
   
     // Only allow one startMic to run
@@ -213,7 +213,6 @@ function App() {
             Detected Note: {last}
         </p>
       )}
-      {/*<Metronome />*/}
       {/* <Metronome /> */}
     </>
   )
