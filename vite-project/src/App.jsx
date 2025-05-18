@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react'
 import * as Pitchfinder from 'pitchfinder'
 
-let last = "NA";
+let last = "N/A";
 let lastTime = 1000000000;
 
 let counter = 0;
@@ -193,7 +193,7 @@ function App() {
   useEffect(() => {
     const readyButton = document.createElement("BUTTON");
     readyButton.setAttribute("type", "button");
-    readyButton.innerHTML = "Click Me";
+    readyButton.innerHTML = "Start/Stop";
     readyButton.onclick = () => setIsReady(prev => !prev);
     document.body.appendChild(readyButton);
   
@@ -205,13 +205,12 @@ function App() {
 
   return (
     <>
-      <h1>Microphone Pitch Detection</h1>
+      <h1>Sightread Showdown</h1>
       {error ? (
         <p style={{ color: 'red' }}>Error: {error}</p>
       ) : (
-          <p>Detected frequency: {pitch ? `${pitch.toFixed(2)} Hz` : 'Listening…'}<br></br>
-            Detected Note: {last}
-        </p>
+          <div id="data"><h2>Detected frequency: <strong>{pitch ? `${pitch.toFixed(2)} Hz` : 'Waiting…'}</strong><br></br><br></br>
+            Detected Note: <strong>{last}</strong></h2></div>
       )}
       {/* <Metronome /> */}
     </>
