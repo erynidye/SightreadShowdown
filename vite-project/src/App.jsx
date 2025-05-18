@@ -6,7 +6,7 @@ import * as Pitchfinder from 'pitchfinder'
 
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
-let last = "NA";
+let last = "N/A";
 let lastTime = 1000000000;
 
 let counter = 0;
