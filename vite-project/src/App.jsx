@@ -143,6 +143,7 @@ function App() {
   const [pitch, setPitch] = useState(null);
   const [error, setError] = useState(null);
   const [isReady, setIsReady] = useState(false);
+  const [score, setScore] = useState(null);
 
   const streamRef = useRef(null);
   const audioContextRef = useRef(null);
@@ -248,6 +249,8 @@ function App() {
       console.log(FMajorScale)
       console.log("score:", score);      
       // console.log(evaluatePerf(testingNotes, FMajorScale));
+
+      setScore(score);
     }
   
     // Only allow one startMic to run
@@ -292,6 +295,8 @@ function App() {
             Detected Note: <strong>{last}</strong></h2></div>
       )}
       {/* <Metronome /> */}
+
+      <h3>{score}</h3>
     </>
   )
 }
