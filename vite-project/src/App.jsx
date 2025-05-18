@@ -174,10 +174,10 @@ function App() {
 
           if (detected) {
             setPitch(detected); // still Hz
-            if (!((current === last) || (current === "NA"))) {
+            if (!((current === last) || (current === "N/A"))) {
               let d = new Date();
               let duration = (d.getTime() - lastTime) / 1000;
-              if (0.06 < duration < 10 && last !== "NA") {
+              if (0.06 < duration < 10 && last !== "N/A") {
                 playedNotes.push({
                   pitch: last,
                   duration: duration
@@ -230,7 +230,7 @@ function App() {
       setPitch(null);
       let d = new Date();
       let duration = (d.getTime() - lastTime) / 1000;
-      if (0.06 < duration < 10 && last !== "NA") {
+      if (0.06 < duration < 10 && last !== "N/A") {
         playedNotes.push({
           pitch: last,
           duration: duration
@@ -272,7 +272,7 @@ function App() {
   useEffect(() => {
     const readyButton = document.createElement("BUTTON");
     readyButton.setAttribute("type", "button");
-    readyButton.innerHTML = "Click Me";
+    readyButton.innerHTML = "Start/Stop";
     readyButton.onclick = () => setIsReady(prev => !prev);
     document.body.appendChild(readyButton);
   
@@ -284,13 +284,12 @@ function App() {
 
   return (
     <>
-      <h1>Microphone Pitch Detection</h1>
+      <h1>Sightread Showdown</h1>
       {error ? (
         <p style={{ color: 'red' }}>Error: {error}</p>
       ) : (
-          <p>Detected frequency: {pitch ? `${pitch.toFixed(2)} Hz` : 'Listening…'}<br></br>
-            Detected Note: {last}
-        </p>
+          <div id="data"><h2>Detected frequency: <strong>{pitch ? `${pitch.toFixed(2)} Hz` : 'Waiting…'}</strong><br></br><br></br>
+            Detected Note: <strong>{last}</strong></h2></div>
       )}
       {/* <Metronome /> */}
     </>

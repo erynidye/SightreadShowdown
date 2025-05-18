@@ -1,11 +1,11 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: Verdana, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: #1B3C65;
+  background-color: #F2E8E4;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -25,14 +25,36 @@ a:hover {
 body {
   margin: 0;
   display: flex;
-  place-items: center;
+  text-align: center;
   min-width: 320px;
   min-height: 100vh;
+
+  background-image: url("assets/scale.png"), url("assets/image1.png"), url("assets/image2.png"), url("assets/image3.png"), url("assets/image4.png");
+  background-position: 20px 120px, right bottom, left bottom, left top, right top;
+  background-size: 1000px, 200px, 200px, 200px, 200px;
+  background-repeat: no-repeat;
 }
 
 h1 {
   font-size: 3.2em;
+  margin-left: 2.1em;
+  margin-right: 5em;
+  width: 16em;
   line-height: 1.1;
+}
+
+h2 {
+  font-size: 2.8em;
+  margin-left: 0.4em;
+  margin-right: 5em;
+  margin-top: 3.6em;
+  width: 24em;
+  font-weight: lighter;
+}
+
+p {
+  text-align: center;
+
 }
 
 button {
@@ -40,11 +62,12 @@ button {
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
   position: absolute;
-  right: 100px;
-  font-size: 1em;
-  font-weight: 500;
+  top: 500px;
+  left: 430px;
+  font-size: 1.5em;
+  font-weight: 1000;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: #528BAE;
   cursor: pointer;
   transition: border-color 0.25s;
 }
