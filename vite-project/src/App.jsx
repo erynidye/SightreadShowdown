@@ -106,10 +106,10 @@ function App() {
 
           if (detected) {
             setPitch(detected); // still Hz
-            if (!((current === last) || (current === "NA"))) {
+            if (!((current === last) || (current === "N/A"))) {
               let d = new Date();
               let duration = (d.getTime() - lastTime) / 1000;
-              if (0.06 < duration < 10 && last !== "NA") {
+              if (0.06 < duration < 10 && last !== "N/A") {
                 playedNotes.push({
                   pitch: last,
                   duration: duration
@@ -162,7 +162,7 @@ function App() {
       setPitch(null);
       let d = new Date();
       let duration = (d.getTime() - lastTime) / 1000;
-      if (0.06 < duration < 10 && last !== "NA") {
+      if (0.06 < duration < 10 && last !== "N/A") {
         playedNotes.push({
           pitch: last,
           duration: duration
